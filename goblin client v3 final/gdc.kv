@@ -1,0 +1,189 @@
+#:kivy 1.11.1
+#:import C kivy.utils.get_color_from_hex
+#:import SlideTransition kivy.uix.screenmanager.SlideTransition
+#:import FloatLayout kivy.uix.floatlayout
+#:import GridLayout kivy.uix.gridlayout
+#:import CheckBox kivy.uix.checkbox 
+
+<TextInput>:
+    multiline: False
+    halign: "center"
+    padding_y: [self.height / 2.0 - (self.line_height / 2.0) * len(self._lines), 0]
+    size_hint: 0.45, 0.10
+
+<Button>:
+    text_size: self.size
+    halign: "center"
+    valign: "center"
+    #padding_y: 5
+    #padding_x: 5
+
+<Label>:
+    #text_size: self.size
+    halign: "center"
+    valign: "center"
+
+
+ScreenManager:
+    transition: SlideTransition()
+
+    Screen:
+        name: "login"
+
+        FloatLayout:
+
+            Label:
+                pos_hint: {"center_x":0.25, "top":0.9}
+                size_hint: 0.35, 0.11
+                text:"server ip: "
+                font_size: (root.width**2 + root.height**2) / 13**4
+
+            TextInput:
+                id: ip_
+                pos_hint: {"center_x": 0.65, "top":0.9}
+                ###on_text: root.update_padding(args[0])
+                ###padding_x: self.width/2 # initial padding
+                ###valign: "middle"            
+                font_size: (root.width**2 + root.height**2) / 14**4
+                on_text_validate: port_.focus = True
+
+            Label:
+                pos_hint: {"center_x":0.25, "top":0.7}
+                size_hint: 0.35, 0.11        
+                font_size: (root.width**2 + root.height**2) / 13**4
+                text:"server port: "
+
+            TextInput:
+                id: port_
+                pos_hint: {"center_x": 0.65 , "top":0.7}   
+                font_size: (root.width**2 + root.height**2) / 14**4
+                on_text_validate: nickname_.focus = True
+            
+            Label:
+                pos_hint: {"center_x":0.25, "top":0.5}
+                size_hint: 0.35, 0.11        
+                font_size: (root.width**2 + root.height**2) / 13**4            
+                text:"Nickname: "
+
+            TextInput:
+                id: nickname_
+                pos_hint: {"center_x": 0.65 , "top":0.5}            
+                font_size: (root.width**2 + root.height**2) / 14**4
+                on_text_validate: password_.focus = True
+
+            Label:
+                pos_hint: {"center_x":0.25, "top":0.3}
+                size_hint: 0.35, 0.11
+                font_size: (root.width**2 + root.height**2) / 13**4
+                text:"Password: "
+
+            TextInput:
+                id: password_
+                pos_hint: {"center_x": 0.65, "top":0.3}            
+                font_size: (root.width**2 + root.height**2) / 14**4
+                password: True
+                on_touch_down:
+                    app.clear_pass()
+
+            Button:
+                pos_hint:{"center_x":0.3,"y":0.05}
+                size_hint: 0.3, 0.08
+                font_size: (root.width**2 + root.height**2) / 13**4
+                text: "Login"
+                on_release:
+                    app.root.transition = SlideTransition(direction="left")
+                    app.connect()
+
+            Button:
+                pos_hint:{"center_x":0.7, "y":0.05}
+                size_hint: 0.3, 0.08
+                font_size: (root.width**2 + root.height**2) / 13**4
+                text: "Quit"
+                on_release:
+                    app.quit_app()
+
+    Screen:
+        name: "diceroom"
+
+        FloatLayout:
+
+            Button:
+                pos_hint:{"center_x":0.30, "y": 0.85}
+                size_hint:0.3,0.1
+                font_size: (root.width**2 + root.height**2) / 13**4
+                text: "K100"
+                on_release:
+                    app.send_msg("K100")
+                
+            Button:
+                pos_hint:{"center_x":0.7, "y": 0.85}
+                size_hint:0.3,0.1
+                font_size: (root.width**2 + root.height**2) / 13**4
+                text: "K6"
+                on_release:
+                    app.send_msg("K6")
+
+            Button:
+                pos_hint:{"center_x":0.30, "y": 0.7}
+                size_hint:0.3,0.1
+                font_size: (root.width**2 + root.height**2) / 13**4
+                text: "K10"
+                on_release:
+                    app.send_msg("K10")
+
+            Button:
+                pos_hint:{"center_x":0.7, "y": 0.7}
+                size_hint:0.3,0.1
+                font_size: (root.width**2 + root.height**2) / 13**4
+                text: "K4"
+                on_release:
+                    app.send_msg("K4")            
+            
+            Button:
+                pos_hint:{"center_x":0.5, "y": 0.05}
+                size_hint:0.3,0.1
+                font_size: (root.width**2 + root.height**2) / 13**4
+                text: "Log Out"
+                on_release:
+                    tom_.active = False
+                    app.checkbox_click(tom_, tom_.active)
+                    app.send_msg("FIN")            
+                    app.root.transition = SlideTransition(direction="right")
+                    app.disconnect()
+
+            TextInput:
+                id: diceResult_
+                pos_hint: {"center_x": 0.5 , "y":0.35}
+                size_hint:0.7,0.3
+                font_size: (root.width**2 + root.height**2) / 11**4
+                readonly: True
+                multiline: False
+                background_color: C("#ffffff")
+                #foreground_color: C("#000000")
+                on_touch_down:
+                    app.clear_results()           
+
+            TextInput:
+                id: nickname2_
+                pos_hint: {"center_x": 0.5 , "y":0.25}
+                size_hint: 0.7,0.1
+                font_size: (root.width**2 + root.height**2) / 13**4
+                readonly: True
+                multiline: False
+                #background_color: C("#ffffff")
+                #foreground_color: C("#000000")
+                on_touch_down:
+                    app.clear_results()
+
+            FloatLayout:
+                Label:
+                    pos_hint: {"center_x":0.50, "y": 0.16}
+                    size_hint: 0.25, 0.11
+                    font_size: (root.width**2 + root.height**2) / 14**4
+                    text:"Roll only for me"
+
+                CheckBox:
+                    id: tom_
+                    pos_hint: {"center_x":0.31, "y": 0.165}
+                    size_hint: 0.3,0.1
+                    on_active: app.checkbox_click(self, self.active) 
