@@ -16,7 +16,7 @@ from kivy.uix.label import Label
 from kivy.uix.popup import Popup
 
 
-CODING = "ascii"
+CODING = "utf-8"
 
 
 class MyPopup(Popup):
@@ -54,7 +54,7 @@ class GdcClient(protocol.Protocol):
         nick = self.factory.app.root.ids.nickname_.text
         passw = self.factory.app.root.ids.password_.text
         #header
-        data_len_and_passw = f"{str(len(gdc_app.tom) + len(nick) + len('auth')+2)}:{passw}"
+        data_len_and_passw = f"{str(len(gdc_app.tom) + len(nick.encode(CODING)) + len('auth')+2)}:{passw}"
         header_tmp = f"{data_len_and_passw:<{GdcApp.HEADER_LENGTH}}".encode(CODING)
         #data
         data_tmp = f"{gdc_app.tom}:{nick}:{'auth'}".encode(CODING)
@@ -111,10 +111,11 @@ class GdcApp(App):
         msg = msg_
         #skonstruowanie treści wiadomości
         #header
-        data_len_and_passw = f"{str(len(gdc_app.tom) + len(self.nick) + len(msg)+2)}:"
+        data_len_and_passw = f"{str(len(gdc_app.tom) + len(self.nick.encode(CODING)) + len(msg)+2)}:"
         header_tmp = f"{data_len_and_passw:<{GdcApp.HEADER_LENGTH}}".encode(CODING)
         #data
         data_tmp = f"{gdc_app.tom}:{self.nick}:{msg}".encode(CODING)
+        print(header_tmp, data_tmp) ############################### test
         self.conn.write(header_tmp + data_tmp)
 
 
