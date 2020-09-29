@@ -1,5 +1,6 @@
 # fix for pyinstaller packages app to avoid ReactorAlreadyInstalledError
 import os, sys
+from kivy.resources import resource_add_path
 if "twisted.internet.reactor" in sys.modules:
     del sys.modules["twisted.internet.reactor"]
 
@@ -49,8 +50,8 @@ class GdcClient(protocol.Protocol):
 
     def connectionMade(self):
         #konstrkcja treści wiadomości autoryzacyjnej
-        servip = self.factory.app.root.ids.ip_.text
-        port = int(self.factory.app.root.ids.port_.text)
+        #servip = self.factory.app.root.ids.ip_.text
+        #port = int(self.factory.app.root.ids.port_.text)
         nick = self.factory.app.root.ids.nickname_.text
         passw = self.factory.app.root.ids.password_.text
         #header
@@ -58,8 +59,8 @@ class GdcClient(protocol.Protocol):
         header_tmp = f"{data_len_and_passw:<{GdcApp.HEADER_LENGTH}}".encode(CODING)
         #data
         data_tmp = f"{gdc_app.tom}:{nick}:{'auth'}".encode(CODING)
-        self.transport.write(header_tmp + data_tmp)
-        self.factory.app.on_connect(self.transport)
+        Clock.schedule_once(lambda x:self.transport.write(header_tmp + data_tmp), 0.1)
+        Clock.schedule_once(lambda x:self.factory.app.on_connect(self.transport), 0.1)
 
 
     def dataReceived(self, data):
@@ -115,7 +116,6 @@ class GdcApp(App):
         header_tmp = f"{data_len_and_passw:<{GdcApp.HEADER_LENGTH}}".encode(CODING)
         #data
         data_tmp = f"{gdc_app.tom}:{self.nick}:{msg}".encode(CODING)
-        print(header_tmp, data_tmp) ############################### test
         self.conn.write(header_tmp + data_tmp)
 
 
@@ -157,7 +157,7 @@ class GdcApp(App):
                 f.write(f"{ip};{port};{nick};{passw}")
                 f.close()
         except Exception as e:
-            showMsg(f"An exception when writing to a file: {e}", self.root_window.width, self.root_window.height, 4)
+            showMsg(f"An exception when writing to a file: {e}", self.root_window.width, self.root_window.height, 3)
 
 
     def clear_results(self):
@@ -185,7 +185,7 @@ class GdcApp(App):
             with open("data.log", "r") as f:
                         self.root.ids.ip_.text, self.root.ids.port_.text, self.root.ids.nickname_.text, self.root.ids.password_.text = f.read().strip().split(";")
         except Exception as e:
-                pass
+            pass
 
 
     def isValidInitializeData(self, ip, port, nick, passw):
@@ -235,7 +235,7 @@ def resourcePath():
 
 
 if __name__ == "__main__":
-    #resource_add_path(resourcePath())
+    resource_add_path(resourcePath())
     
     #Config.set("graphics", "width", "600")
     #Config.set("graphics", "height", "900")
