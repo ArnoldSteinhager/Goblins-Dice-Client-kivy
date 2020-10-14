@@ -16,6 +16,9 @@ from kivy.clock import Clock
 from kivy.uix.label import Label
 from kivy.uix.popup import Popup
 
+#from kivy.core.audio import SoundLoader
+from playsound import playsound
+
 
 CODING = "utf-8"
 
@@ -105,7 +108,9 @@ class GdcApp(App):
         if self.conn:
             self.conn.loseConnection()
             del self.conn
-        self.root.current = "login"
+        Clock.schedule_once(lambda x,y=self:self.play_snd("woosh.wav"),0)
+        Clock.schedule_once(lambda x,y=self:self.change_screen("login"),0.5)
+        #self.root.current = "login"
 
 
     def send_msg(self, msg_):
@@ -122,7 +127,9 @@ class GdcApp(App):
     def on_connect(self, conn):
         showMsg("connecting to: " + self.servip, self.root_window.width, self.root_window.height, 1)
         self.conn = conn
-        self.root.current = "diceroom"
+        Clock.schedule_once(lambda x,y=self:self.play_snd("woosh.wav"),0)
+        Clock.schedule_once(lambda x,y=self:self.change_screen("diceroom"),0.5)
+        #self.root.current = "diceroom"
 
 
     def on_message(self, msg):
@@ -133,16 +140,34 @@ class GdcApp(App):
         if len(partsOfmsg) == 4:
             temp_nick, temp_dice = partsOfmsg[1].split(":")
             self.root.ids.diceResult_.text = temp_dice + " => " + partsOfmsg[3]
+            if temp_dice == "K100":
+                if int(partsOfmsg[3]) >= 99:
+                    Clock.schedule_once(lambda x,y=self:self.play_snd("goblin_laugh3.mp3"),0)
+                elif int(partsOfmsg[3]) == 1:
+                    Clock.schedule_once(lambda x,y=self:self.play_snd("goblin_laugh.mp3"),0)
+                elif int(partsOfmsg[3]) > 1 and int(partsOfmsg[3]) <= 5:
+                    Clock.schedule_once(lambda x,y=self:self.play_snd("goblin_laugh2.mp3"),0)
             self.root.ids.nickname2_.text = temp_nick
         #jeśli wiadomość zawiera nick ze spacjami, np.: [18, Arnold, Steinhager:K100, = , 60]
         elif len(partsOfmsg) > 4:
             nick_and_dice = " ".join(partsOfmsg[1:-2]).split(":")
             self.root.ids.diceResult_.text = nick_and_dice[1] + " => " + partsOfmsg[-1]
+            if nick_and_dice[1] == "K100":
+                if int(partsOfmsg[-1]) >= 99:
+                    Clock.schedule_once(lambda x,y=self:self.play_snd("goblin_laugh3.mp3"),0)
+                elif int(partsOfmsg[-1]) == 1:
+                    Clock.schedule_once(lambda x,y=self:self.play_snd("goblin_laugh.mp3"),0)
+                elif int(partsOfmsg[-1]) > 1 and int(partsOfmsg[-1]) <= 5:
+                    Clock.schedule_once(lambda x,y=self:self.play_snd("goblin_laugh2.mp3"),0)                
             self.root.ids.nickname2_.text = nick_and_dice[0]
         else:
         #jeśli server wysyła flage FIN, wiadomośc wygląda tak: [10, Server:FIN]
             if partsOfmsg[1] == "Server:FIN":
                 self.disconnect()
+
+
+    def change_screen(instance, name_of_screen):
+        instance.root.current = name_of_screen
 
 
     def quit_app(self):
@@ -221,6 +246,20 @@ class GdcApp(App):
     def build(self):
         self.title = "Goblin Dice Client"
         self.loadDataFromFile()
+        self.xxx = None
+
+    
+    def play_snd(instance, sound_path):
+        try:
+            snd = resourcePath()
+            snd += "\\"
+            snd += sound_path
+            #print("resource path>>>>: ", snd)
+        except: pass
+
+        try:
+            playsound(snd, False)
+        except: pass
 
 
 
@@ -231,14 +270,15 @@ def resourcePath():
         return os.path.join(sys._MEIPASS)
 
     return os.path.join(os.path.abspath("."))
-################################################################################
+
+
 
 
 if __name__ == "__main__":
     resource_add_path(resourcePath())
-    
-    #Config.set("graphics", "width", "600")
-    #Config.set("graphics", "height", "900")
+    Config.set("graphics", "width", "500")
+    Config.set("graphics", "height", "700")
+    Config.set('kivy','window_icon',"ikona.ico")
     Config.set("input", "mouse", "mouse,multitouch_on_demand")
 
     gdc_app = GdcApp()

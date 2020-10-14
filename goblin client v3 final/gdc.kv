@@ -23,6 +23,11 @@
     halign: "center"
     valign: "center"
 
+<DiceButton@Button>:
+    size_hint: None, None
+    allow_stretch: True
+    keep_ratio: True
+
 
 ScreenManager:
     transition: SlideTransition()
@@ -104,41 +109,54 @@ ScreenManager:
 
     Screen:
         name: "diceroom"
-
+        
         FloatLayout:
 
-            Button:
-                pos_hint:{"center_x":0.30, "y": 0.85}
-                size_hint:0.3,0.1
-                font_size: (root.width**2 + root.height**2) / 13**4
-                text: "K100"
+            DiceButton:
+                pos_hint:{"center_x":0.30, "y": 0.77}
+                width: self.parent.width *0.40
+                height: self.parent.width * 0.29              
+                background_normal: "K100_0.png"
+                background_down: "K100_1.png"
+                on_press:
+                    app.play_snd("kb.wav")
                 on_release:
                     app.send_msg("K100")
                 
-            Button:
-                pos_hint:{"center_x":0.7, "y": 0.85}
-                size_hint:0.3,0.1
-                font_size: (root.width**2 + root.height**2) / 13**4
-                text: "K6"
+            DiceButton:
+                pos_hint:{"center_x":0.7, "y": 0.77}
+                width: self.parent.width *0.3
+                height: self.parent.width * 0.27               
+                background_normal: "K6_0.png"
+                background_down: "K6_1.png"
+                on_press:
+                    app.play_snd("ks.wav")                
                 on_release:
                     app.send_msg("K6")
 
-            Button:
-                pos_hint:{"center_x":0.30, "y": 0.7}
-                size_hint:0.3,0.1
-                font_size: (root.width**2 + root.height**2) / 13**4
-                text: "K10"
+            DiceButton:
+                pos_hint:{"center_x":0.30, "y":0.57}
+                width: self.parent.width *0.3
+                height: self.parent.width * 0.3               
+                background_normal: "K10_0.png"
+                background_down: "K10_1.png"
+                on_press:
+                    app.play_snd("ks.wav")                  
                 on_release:
                     app.send_msg("K10")
 
-            Button:
-                pos_hint:{"center_x":0.7, "y": 0.7}
-                size_hint:0.3,0.1
-                font_size: (root.width**2 + root.height**2) / 13**4
-                text: "K4"
+            DiceButton:
+                pos_hint:{"center_x":0.7, "y":0.57}
+                width: self.parent.width *0.31
+                height: self.parent.width *0.27             
+                background_normal: "K4_0.png"
+                background_down: "K4_1.png"
+                on_press:
+                    app.play_snd("ks.wav")                  
                 on_release:
-                    app.send_msg("K4")            
-            
+                    app.send_msg("K4")
+
+
             Button:
                 pos_hint:{"center_x":0.5, "y": 0.05}
                 size_hint:0.3,0.1
@@ -154,7 +172,7 @@ ScreenManager:
             TextInput:
                 id: diceResult_
                 pos_hint: {"center_x": 0.5 , "y":0.35}
-                size_hint:0.7,0.3
+                size_hint:0.7,0.20
                 font_size: (root.width**2 + root.height**2) / 11**4
                 readonly: True
                 multiline: False
